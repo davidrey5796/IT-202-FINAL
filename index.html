@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <h1> The name of the programer of this website is David Reyes </h1>
+    <title>Geolocation</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 100%;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+  </head>
+  <body>
+  <div id="map"></div>
+    <script>
+      // Note: This example requires that you consent to location sharing when
+      // prompted by your browser. If you see the error "The Geolocation service
+      // failed.", it means you probably did not give permission for the browser to
+      // locate you.
+      var map, infoWindow;
+      function initMap() {
+        map = new google.maps.Map(document.getElementById('map'), {
+          center: {lat: -34.397, lng: 150.644},
+          zoom: 6
+        });
+        infoWindow = new google.maps.InfoWindow;
+
+        // Try HTML5 geolocation.
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(function(position) {
+            var pos = {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude
+            };
+
+            infoWindow.setPosition(pos);
+            infoWindow.setContent('Location found.');
+            infoWindow.open(map);
+            map.setCenter(pos);
+          }, function() {
+            handleLocationError(true, infoWindow, map.getCenter());
+          });
+        } else {
+          // Browser doesn't support Geolocation
+          handleLocationError(false, infoWindow, map.getCenter());
+        }
+      }
+
+      function handleLocationError(browserHasGeolocation, infoWindow, pos) {
+        infoWindow.setPosition(pos);
+        infoWindow.setContent(browserHasGeolocation ?
+                              'Error: The Geolocation service failed.' :
+                              'Error: Your browser doesn\'t support geolocation.');
+        infoWindow.open(map);
+      }
+    </script>
+    
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDa4dMSOASs_iLQnhrPoQ8EZgj2Im_pZ7o&callback=initMap">
+    </script>
+    
+  
+
+
+<!-- I am unable to get my Geo locaiton to work some reason.  -->
+
+<script>
+// Initialize and add the map
+function initMap() {
+  // The location of Chicago
+  var chicago = {lat: 41.8781, lng: -87.6298};
+  // The map, centered at my location
+  var map = new google.maps.Map(
+  // Grab the data from the police station. 
+      document.getElementById('map'), {zoom: 11, center: chicago});
+  $.get("https://data.cityofchicago.org/resource/9rg7-mz9y.json?$limit=25", 
+      function(response) {
+        console.log("in data callback");
+        var data = response;
+        createMarkers(map, data );
+      });
+}
+  function createMarkers (map, data) {
+    console.log(data);
+    $.each(data, function(i,v) {
+      var location = {lat: parseFloat(v.latitude), lng: parseFloat(v.longitude) }
+      
+      var marker = new google.maps.Marker({position: location, map: map});
+      
+      var infowindow = new google.maps.InfoWindow({
+        content: 'District: ' + v.district_name + '<br/>' + 'Address: ' + v.address 
+      });
+      marker.addListener('click', function() {
+        infowindow.open(map, marker);
+      });
+    });
+  }
+    </script>
+
+  <!--the script above will be able to display markers and data information on the police station. --> 
+  </body>
+  </html> 
